@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="score-container">Score: <span id="score">0</span></div>
+        <div id="game-board"></div>
+        <div id="instructions">
+            Use your arrow keys to move the tiles. Tiles with the same number merge into one when they touch. Add them up to reach 2048!
+        </div>
+        <button id="help-button">HELP</button>
+        <button id="test-game-over-button" style="margin-top: 5px;">Test Game Over</button>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="background-audio" src="/background.mp3" loop preload="auto"></audio>
+    <audio id="move-audio" src="/move.wav" preload="auto"></audio>
+
+    <script type="module" src="/main.js"></script>
+</body>
+</html> 
