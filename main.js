@@ -1,4 +1,12 @@
 const gameBoard = document.getElementById('game-board');
+const backgroundAudio = document.getElementById('background-audio');
+const moveAudio = document.getElementById('move-audio');
+const startOverlay = document.getElementById('start-overlay');
+const startButton = document.getElementById('start-button');
+const gameContainer = document.querySelector('.game-container'); // Get the game container
+const fanfareAudio = document.getElementById('fanfare-audio');
+let audioInitialized = false; // Flag to track if user interaction has occurred for audio
+
 const gridSize = 4;
 let grid = []; // Represents the game state
 let tiles = []; // Represents the DOM elements for the tiles
@@ -86,26 +94,59 @@ function renderGrid() {
 }
 
 function createTile(r, c, value, tileSize, gap, boardPadding) {
-    const tile = document.createElement('div');
-    tile.classList.add('tile');
-    // Add class for specific tile value for styling
-    tile.classList.add(`tile-${value}`);
-    tile.textContent = value;
+    console.log(`[createTile] Called for [${r},${c}], value ${value}`);
+    let tile = null; // Initialize to null
+    try {
+        tile = document.createElement('div');
+        if (!tile) {
+            console.error("[createTile] document.createElement('div') failed!");
+            return null; // Explicitly return null if creation fails
+        }
+        console.log(`[createTile] Element created for [${r},${c}]`);
 
-    // Set initial size based on calculated value
-    tile.style.width = `${tileSize}px`;
-    tile.style.height = `${tileSize}px`;
+        tile.classList.add('tile');
+        tile.classList.add(`tile-${value}`);
+        tile.textContent = value;
 
-    // Calculate position based on grid cell
-    // const gap = 10; // Matches the CSS gap property
-    // const boardPadding = 10; // Matches the CSS padding property
-    // const tileSize = (gameBoard.clientWidth - 2 * boardPadding - (gridSize - 1) * gap) / gridSize;
-    // Correct calculation for top/left using passed parameters
-    tile.style.top = `${r * (tileSize + gap) + boardPadding}px`;
-    tile.style.left = `${c * (tileSize + gap) + boardPadding}px`;
+        console.log(`[createTile] Applying single style for [${r},${c}]`);
+        applySingleTileStyle(tile, value); // Apply colors/font size
+        console.log(`[createTile] Style applied for [${r},${c}]`);
 
-    gameBoard.appendChild(tile);
-    tiles[r][c] = tile; // Store the tile element reference
+        tile.style.width = `${tileSize}px`;
+        tile.style.height = `${tileSize}px`;
+        tile.style.top = `${r * (tileSize + gap) + boardPadding}px`;
+        tile.style.left = `${c * (tileSize + gap) + boardPadding}px`;
+        console.log(`[createTile] Position styles set for [${r},${c}]`);
+
+        // Append only if gameBoard exists
+        if (!gameBoard) {
+             console.error("[createTile] gameBoard element not found!");
+             return null; // Cannot append
+        }
+        gameBoard.appendChild(tile);
+        console.log(`[createTile] Appended to gameBoard for [${r},${c}]`);
+
+        // *** Store the DOM element reference in the global tiles array ***
+        console.log(`[createTile] Checking tiles[${r}] before assignment for [${r},${c}]`);
+        // Check if the global tiles array and the specific row exist
+        if (tiles && Array.isArray(tiles[r])) {
+            console.log(`[createTile] Assigning tile element to tiles[${r}][${c}]`);
+            tiles[r][c] = tile;
+            console.log(`[createTile] Assignment done for [${r},${c}]`);
+        } else {
+            console.error(`[createTile] tiles array or row tiles[${r}] is invalid. Cannot assign DOM reference. tiles:`, JSON.stringify(tiles));
+            // We should still return the tile element even if we couldn't store the reference
+        }
+
+        console.log(`[createTile] Returning tile element for [${r},${c}]`, tile);
+        return tile; // Return the created element
+
+    } catch (error) {
+        console.error(`[createTile] Error during execution for [${r},${c}]:`, error);
+        // Log the state just before the error if possible
+        console.error(`[createTile] State when error occurred: r=${r}, c=${c}, value=${value}, tileElement (partially created?)=`, tile);
+        return null; // Explicitly return null on error
+    }
 }
 
 // Add tile color styles dynamically
@@ -275,7 +316,8 @@ function processRowDetailed(row) {
 }
 
 function handleInput(event) {
-    if (isGameOver || isAnimating) return;
+    if (isGameOver || isAnimating || !audioInitialized) return; // Don't handle input if game not started/over/animating
+    // initAudioContext(); // Removed: Now called by start button
 
     let moveCalculationResult = null;
 
@@ -297,6 +339,7 @@ function handleInput(event) {
     }
 
     if (moveCalculationResult && moveCalculationResult.moved) {
+        playMoveSound(); // Play sound effect on successful move calculation
         // Call animateMove which handles the animation and subsequent updates
         animateMove(
             moveCalculationResult.actions,
@@ -957,6 +1000,7 @@ function gameOver() {
     restartButton.style.borderRadius = '3px';
     restartButton.style.cursor = 'pointer';
     restartButton.onclick = () => {
+        playFanfare(); // Play fanfare on restart
         initGrid(); // Restart the game
     };
 
@@ -1069,7 +1113,8 @@ function getBestMove() {
 }
 
 function executeHelpMove() {
-    if (isGameOver || isAnimating) return;
+    if (isGameOver || isAnimating || !audioInitialized) return; // Don't run if game not started
+    // initAudioContext(); // Removed: Now called by start button
 
     const bestMoveDirection = getBestMove(); // Simulation logic might need update later
 
@@ -1084,6 +1129,7 @@ function executeHelpMove() {
         }
 
         if (moveCalculationResult && moveCalculationResult.moved) {
+             playMoveSound(); // Play sound effect for help move
              // Trigger animation
              animateMove(
                  moveCalculationResult.actions, // Note: Actions might be empty for non-refactored directions
@@ -1107,50 +1153,105 @@ function executeHelpMove() {
     }
 }
 
-// --- Initialization ---
+// --- Initialization --- (Now mostly handled by start button)
+
+function startGame() {
+    console.log("Start button clicked.");
+    // 1. Initialize Audio
+    initAudioContext();
+
+    // 2. Hide overlay and show game
+    if (startOverlay) startOverlay.style.display = 'none';
+    if (gameContainer) gameContainer.style.visibility = 'visible';
+
+    // 3. Initialize the game board and state
+    initGrid();
+
+    // 4. Add game event listeners only AFTER start
+    document.addEventListener('keydown', handleInput);
+    const helpButton = document.getElementById('help-button');
+    if (helpButton) { helpButton.addEventListener('click', executeHelpMove); }
+
+    console.log('Game initialized and started.');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply base styles that might be needed before start
     applyTileStyles();
-    initGrid();
-    console.log('Game initialized');
-    console.log(grid);
-    document.addEventListener('keydown', handleInput);
 
-    // Add event listener for the help button
-    const helpButton = document.getElementById('help-button');
-    if (helpButton) {
-        helpButton.addEventListener('click', executeHelpMove);
+    // Get start button and add listener
+    if (startButton) {
+        startButton.addEventListener('click', startGame);
     } else {
-        console.error("Help button not found!");
-    }
-
-    // Add event listener for the temporary test game over button
-    const testGameOverButton = document.getElementById('test-game-over-button');
-    if (testGameOverButton) {
-        testGameOverButton.addEventListener('click', setupTestGameOver);
-    } else {
-        console.warn("Test Game Over button not found!");
+        console.error("Start button not found!");
+        // As a fallback, maybe show the game immediately?
+        if (gameContainer) gameContainer.style.visibility = 'visible';
+        initGrid(); // Initialize grid anyway
     }
 });
 
-// --- Test Functions ---
-function setupTestGameOver() {
-    if (isGameOver) return; // Don't do anything if already game over
-    console.log("Setting up test game over state...");
-    // A known grid state where no moves are possible
-    grid = [
-        [2, 4, 8, 16],
-        [4, 8, 16, 32],
-        [8, 16, 32, 64],
-        [16, 32, 64, 128]
-    ];
-    score = 1000; // Example score
-    isGameOver = false; // Ensure it's not already marked as over
-    updateScoreDisplay();
-    renderGrid(); // Render this specific grid
+// Function to initialize audio context on first user interaction (now the start button click)
+function initAudioContext() {
+    if (audioInitialized) return;
+    console.log("Initializing audio context via Start Button...");
+    audioInitialized = true;
 
-    // Now check if game over should trigger
-    if (!canMove() && !hasEmptyCells()) {
-        gameOver();
+    // Play fanfare first using the dedicated function
+    playFanfare();
+
+    // Attempt to unlock with move sound as fallback if fanfare might have failed silently
+    if(moveAudio) {
+        moveAudio.play().then(()=>moveAudio.pause()).catch(()=>{/* ignore error */});
     }
+
+    // Still try to start background music regardless of fanfare success
+    startBackgroundMusic();
+}
+
+// Function to start background music (called after context is likely unlocked)
+function startBackgroundMusic() {
+    if (backgroundAudio) {
+        console.log("Attempting to start background music...");
+        backgroundAudio.volume = 0.3; // Set volume before playing
+        backgroundAudio.play().then(() => {
+            console.log("Background music started.");
+        }).catch(error => {
+            console.warn("Background music playback failed even after interaction:", error);
+        });
+    } else {
+         console.warn("Background audio element not found.");
+    }
+}
+
+// Function to play the move sound
+function playMoveSound() {
+    if (!audioInitialized) {
+        console.warn("playMoveSound called before audio context initialized.");
+        return; // Don't try playing if context isn't ready
+    }
+    if (moveAudio) {
+        moveAudio.pause(); // Stop if already playing
+        moveAudio.currentTime = 0; // Rewind to start
+        moveAudio.play().catch(error => {
+            console.warn("Move sound playback failed:", error);
+        });
+    } else {
+        console.warn("Move audio element not found.")
+    }
+}
+
+// Separate function to play fanfare (can be called from multiple places)
+function playFanfare() {
+     if (audioInitialized && fanfareAudio) {
+         console.log("Attempting to play fanfare...");
+         fanfareAudio.pause();
+         fanfareAudio.currentTime = 0;
+         fanfareAudio.play().catch(error => {
+             console.warn("Fanfare playback failed:", error);
+         });
+     } else if (!audioInitialized) {
+          console.warn("Cannot play fanfare: Audio context not initialized.");
+     } else {
+          console.warn("Fanfare audio element not found.");
+     }
 } 

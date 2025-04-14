@@ -60,22 +60,6 @@ body {
     background-color: #776e65;
 }
 
-/* Style for the temporary button */
-#test-game-over-button {
-    padding: 8px 15px;
-    font-size: 14px;
-    color: #f9f6f2;
-    background-color: #a39485;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-#test-game-over-button:hover {
-    background-color: #8f7a66;
-}
-
 .grid-cell {
     background-color: rgba(238, 228, 218, 0.35);
     border-radius: 3px;
@@ -99,17 +83,7 @@ body {
 @keyframes newTileAnimation {
   from {
     opacity: 0;
-    transform: scale(0);
-  }
-  50% {
-    /* Fade-in happens naturally towards 100% */
-    transform: scale(1.15); /* Overshoot for bounce */
-  }
-  70% {
-    transform: scale(0.95); /* Dip for bounce */
-  }
-  90% {
-    transform: scale(1.05); /* Smaller overshoot */
+    transform: scale(0.5); /* Start smaller */
   }
   to {
     opacity: 1;
@@ -124,4 +98,33 @@ body {
   /* Ensure initial state for the animation is set (overrides base .tile opacity/transform) */
   opacity: 0;
   transform: scale(0);
+}
+
+#start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 248, 239, 0.9); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200; /* Ensure it's on top */
+}
+
+#start-button {
+    padding: 20px 40px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #f9f6f2;
+    background-color: #8f7a66;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#start-button:hover {
+    background-color: #776e65;
 } 
