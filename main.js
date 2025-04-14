@@ -36,25 +36,45 @@ function startGame() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM Loaded.");
 
-    // Basic anti-proxy / environment check - REVERSED LOGIC
-    const hostname = window.location.hostname.toLowerCase();
-    if (!hostname.includes('test')) { // Check if hostname DOES NOT contain 'test'
-        console.error("Incorrect environment detected (hostname missing 'test'). Game initialization blocked.");
-        // Optionally display a message to the user
-        const overlay = document.getElementById('start-overlay');
-        const button = document.getElementById('start-button');
-        if (overlay) {
-            overlay.innerHTML = '<p style="color: red; text-align: center;">Cannot run in this environment.</p>'; // Keep generic message or change
-            overlay.style.display = 'flex'; // Ensure overlay is visible
-            if (button) button.remove(); // Remove the start button
-        }
-        return; // Stop further setup
-    }
+    // Obfuscated environment check
+    try {
+        const w = window;
+        const lKey = String.fromCharCode(108, 111, 99, 97, 116, 105, 111, 110); // "location"
+        const loc = w[lKey];
+        const hnKey = String.fromCharCode(104, 111, 115, 116, 110, 97, 109, 101); // "hostname"
+        const hn = loc[hnKey].toLowerCase();
+        const includesKey = String.fromCharCode(105, 110, 99, 108, 117, 100, 101, 115); // "includes"
+        const checkStr = String.fromCharCode(116, 101, 115, 116); // "test"
 
-    // If check passes (hostname includes 'test'), proceed with setup
-    console.log("Correct environment detected. Setting up start button.");
-    // applyBaseTileStyles(); // Call if needed for dynamic base styles
-    setupStartButtonListener(startGame); // From ui.js
+        if (!hn[includesKey](checkStr)) { // Check if hostname DOES NOT contain the reconstructed string
+            console.error("Incorrect environment detected. Game initialization blocked.");
+            const overlayId = String.fromCharCode(115, 116, 97, 114, 116, 45, 111, 118, 101, 114, 108, 97, 121); // "start-overlay"
+            const buttonId = String.fromCharCode(115, 116, 97, 114, 116, 45, 98, 117, 116, 116, 111, 110); // "start-button"
+            const overlay = document.getElementById(overlayId);
+            const button = document.getElementById(buttonId);
+            if (overlay) {
+                overlay.innerHTML = '<p style="color: red; text-align: center;">Cannot run in this environment.</p>';
+                overlay.style.display = 'flex';
+                if (button) button.remove();
+            }
+            return; // Stop further setup
+        }
+
+        // If check passes, proceed with setup
+        console.log("Correct environment detected. Setting up start button.");
+        const startFn = startGame; // Reference function
+        setupStartButtonListener(startFn); // From ui.js
+
+    } catch (e) {
+        console.error("Error during environment check or setup:", e);
+        // Optional: Block game on any error during check
+        const overlayId = String.fromCharCode(115, 116, 97, 114, 116, 45, 111, 118, 101, 114, 108, 97, 121); // "start-overlay"
+        const overlay = document.getElementById(overlayId);
+         if (overlay) {
+            overlay.innerHTML = '<p style="color: red; text-align: center;">Error during startup.</p>';
+            overlay.style.display = 'flex';
+        }
+    }
 });
 
 // No other functions should be defined in main.js - they belong in modules. 
