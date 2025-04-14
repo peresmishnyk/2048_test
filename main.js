@@ -852,7 +852,8 @@ async function animateMove(actions, finalGrid, scoreIncrease) {
         const newTileElement = createTile(newTileR, newTileC, newValue, tileSize, gap, boardPadding);
         console.log("[AnimateMove] New tile DOM element created:", newTileElement, "tiles array updated?", tiles[newTileR]?.[newTileC] === newTileElement);
 
-        // Add an appearance animation using the CSS class
+        // Remove appearance animation logic
+        /*
         if (newTileElement) { // Ensure element exists before styling
             newTileElement.classList.add('tile-new');
             console.log("[AnimateMove] Added .tile-new class for appearance animation.");
@@ -862,8 +863,6 @@ async function animateMove(actions, finalGrid, scoreIncrease) {
                  if (newTileElement && newTileElement.parentNode) { // Check if element still exists
                       console.log(`[AnimateMove] Removing .tile-new class for new tile at [${newTileR},${newTileC}]`);
                       newTileElement.classList.remove('tile-new');
-                      // Ensure opacity and transform are reset to default .tile styles if needed
-                      // (though the animation's 'to' state should handle this)
                  } else {
                       console.warn(`[AnimateMove] New tile element at [${newTileR},${newTileC}] no longer exists when removing .tile-new class.`);
                  }
@@ -871,6 +870,11 @@ async function animateMove(actions, finalGrid, scoreIncrease) {
         } else {
              console.error("[AnimateMove] createTile returned null/undefined for the new tile.")
         }
+        */
+       if (!newTileElement) {
+            console.error("[AnimateMove] createTile returned null/undefined for the new tile.");
+       }
+
     } else {
          console.error("[AnimateMove] Could not find the position of the newly added random tile in the grid/tiles comparison.");
          // Log the state for debugging

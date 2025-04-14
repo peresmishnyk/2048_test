@@ -79,26 +79,28 @@ body {
     transition: transform 250ms ease-in-out, top 250ms ease-in-out, left 250ms ease-in-out, background-color 250ms ease-in-out, color 250ms ease-in-out;
 }
 
-/* Keyframes for new tile appearance animation */
+/* Keyframes for new tile appearance animation - Removed */
+/*
 @keyframes newTileAnimation {
   from {
     opacity: 0;
-    transform: scale(0.5); /* Start smaller */
+    transform: scale(0); 
   }
   to {
     opacity: 1;
-    transform: scale(1); /* Final state */
+    transform: scale(1); 
   }
 }
+*/
 
-/* Class added temporarily to new tiles to trigger the animation */
+/* Class added temporarily to new tiles to trigger the animation - Removed */
+/*
 .tile.tile-new {
-  /* Apply the animation */
   animation: newTileAnimation 250ms ease-out;
-  /* Ensure initial state for the animation is set (overrides base .tile opacity/transform) */
   opacity: 0;
   transform: scale(0);
 }
+*/
 
 #start-overlay {
     position: absolute;
