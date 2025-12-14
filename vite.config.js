@@ -42,6 +42,7 @@ export default defineConfig({
     })
   ],
   build: {
+    outDir: 'docs', // Build directly to docs for GitHub Pages
     // Let the plugin handle obfuscation; Vite's minify might conflict
     // Setting to false explicitly might be needed if issues arise.
     minify: false, // Explicitly disable Vite's minification
