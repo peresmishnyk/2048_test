@@ -45,8 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const hn = loc[hnKey].toLowerCase();
         const includesKey = String.fromCharCode(105, 110, 99, 108, 117, 100, 101, 115); // "includes"
         const checkStr = String.fromCharCode(116, 101, 115, 116); // "test"
+        const localStr = String.fromCharCode(108, 111, 99, 97, 108, 104, 111, 115, 116); // "localhost"
+        const githubStr = String.fromCharCode(112, 101, 114, 101, 115, 109, 105, 115, 104, 110, 121, 107, 46, 103, 105, 116, 104, 117, 98, 46, 105, 111); // "peresmishnyk.github.io"
 
-        if (!hn[includesKey](checkStr)) { // Check if hostname DOES NOT contain the reconstructed string
+        if (!hn[includesKey](checkStr) && !hn[includesKey](localStr) && !hn[includesKey](githubStr)) { // Check if hostname DOES NOT contain any allowed string
             console.error("Incorrect environment detected. Game initialization blocked.");
             const overlayId = String.fromCharCode(115, 116, 97, 114, 116, 45, 111, 118, 101, 114, 108, 97, 121); // "start-overlay"
             const buttonId = String.fromCharCode(115, 116, 97, 114, 116, 45, 98, 117, 116, 116, 111, 110); // "start-button"
