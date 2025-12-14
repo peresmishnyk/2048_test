@@ -1,0 +1,132 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #faf8ef;
+    margin: 0;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#score-container {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #776e65;
+}
+
+#game-board {
+    width: 400px;
+    height: 400px;
+    background-color: #bbada0;
+    border-radius: 6px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+}
+
+#instructions {
+    margin-top: 20px;
+    color: #776e65;
+    font-size: 16px;
+    text-align: center;
+    max-width: 400px;
+}
+
+#help-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #f9f6f2;
+    background-color: #8f7a66;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#help-button:hover {
+    background-color: #776e65;
+}
+
+.grid-cell {
+    background-color: rgba(238, 228, 218, 0.35);
+    border-radius: 3px;
+}
+
+.tile {
+    position: absolute;
+    width: 87.5px;
+    height: 87.5px;
+    background-color: #eee4da;
+    border-radius: 3px;
+    font-size: 55px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 250ms ease-in-out, top 250ms ease-in-out, left 250ms ease-in-out, background-color 250ms ease-in-out, color 250ms ease-in-out;
+}
+
+/* Keyframes for new tile appearance animation - Removed */
+/*
+@keyframes newTileAnimation {
+  from {
+    opacity: 0;
+    transform: scale(0); 
+  }
+  to {
+    opacity: 1;
+    transform: scale(1); 
+  }
+}
+*/
+
+/* Class added temporarily to new tiles to trigger the animation - Removed */
+/*
+.tile.tile-new {
+  animation: newTileAnimation 250ms ease-out;
+  opacity: 0;
+  transform: scale(0);
+}
+*/
+
+#start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(250, 248, 239, 0.9); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200; /* Ensure it's on top */
+}
+
+#start-button {
+    padding: 20px 40px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #f9f6f2;
+    background-color: #8f7a66;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#start-button:hover {
+    background-color: #776e65;
+} 
