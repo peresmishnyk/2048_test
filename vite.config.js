@@ -29,6 +29,7 @@ const obfuscatorOptions = {
 };
 
 export default defineConfig({
+  base: './', // Use relative paths for assets (needed for GitHub Pages subdirectory)
   plugins: [
     // Use the new Vite plugin
     // Apply it only during build, and potentially only to specific chunks
