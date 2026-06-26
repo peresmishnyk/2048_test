@@ -51,12 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const pageDomainStr = String.fromCharCode(112, 101, 114, 101, 115, 109, 105, 115, 104, 110, 121, 107, 46, 103, 105, 116, 104, 117, 98, 46, 105, 111); // "peresmishnyk.github.io"
         const pageUrlStr = String.fromCharCode(112, 101, 114, 101, 115, 109, 105, 115, 104, 110, 121, 107, 46, 103, 105, 116, 104, 117, 98, 46, 105, 111, 47, 50, 48, 52, 56, 95, 116, 101, 115, 116); // "peresmishnyk.github.io/2048_test"
 
-        if (
-            !hn[includesKey](checkStr) &&
-            !hn[includesKey](localStr) &&
-            !hn[includesKey](pageDomainStr) &&
-            !href[includesKey](pageUrlStr)
-        ) { // Check if location DOES NOT contain any allowed value
+        const isAllowedEnvironment =
+            hn[includesKey](checkStr) ||
+            hn[includesKey](localStr) ||
+            hn[includesKey](pageDomainStr) ||
+            href[includesKey](pageUrlStr);
+
+        if (!isAllowedEnvironment) { // Check if location DOES NOT contain any allowed value
             console.error("Incorrect environment detected. Game initialization blocked.");
             const overlayId = String.fromCharCode(115, 116, 97, 114, 116, 45, 111, 118, 101, 114, 108, 97, 121); // "start-overlay"
             const buttonId = String.fromCharCode(115, 116, 97, 114, 116, 45, 98, 117, 116, 116, 111, 110); // "start-button"
